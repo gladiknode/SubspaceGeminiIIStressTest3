@@ -22,12 +22,13 @@ bash_profile=$HOME/.bash_profile
 if [ -f "$bash_profile" ]; then
     . $HOME/.bash_profile
 fi
+sleep 1 && curl -s https://api.nodes.guru/logo.sh | bash && sleep 1
 
 sudo apt update && sudo apt install ocl-icd-opencl-dev libopencl-clang-dev libgomp1 -y
 cd $HOME
 rm -rf subspace*
-wget -O subspace-node https://github.com/subspace/subspace/releases/download/gemini-2a-2022-sep-06/subspace-node-ubuntu-x86_64-gemini-2a-2022-sep-06
-wget -O subspace-farmer https://github.com/subspace/subspace/releases/download/gemini-2a-2022-sep-06/subspace-farmer-ubuntu-x86_64-gemini-2a-2022-sep-06
+wget -O subspace-node https://github.com/subspace/subspace/releases/download/gemini-2a-2022-sep-10/subspace-node-ubuntu-x86_64-gemini-2a-2022-sep-10
+wget -O subspace-farmer https://github.com/subspace/subspace/releases/download/gemini-2a-2022-sep-10/subspace-farmer-ubuntu-x86_64-gemini-2a-2022-sep-10
 chmod +x subspace*
 mv subspace* /usr/local/bin/
 
@@ -40,12 +41,14 @@ sleep 1
 echo "[Unit]
 Description=Subspace Node
 After=network.target
+
 [Service]
 User=$USER
 Type=simple
 ExecStart=/usr/local/bin/subspace-node --chain gemini-2a --execution wasm --state-pruning archive --validator --name $SUBSPACE_NODENAME
 Restart=on-failure
 LimitNOFILE=65535
+
 [Install]
 WantedBy=multi-user.target" > $HOME/subspaced.service
 
@@ -53,12 +56,14 @@ WantedBy=multi-user.target" > $HOME/subspaced.service
 echo "[Unit]
 Description=Subspaced Farm
 After=network.target
+
 [Service]
 User=$USER
 Type=simple
 ExecStart=/usr/local/bin/subspace-farmer farm --reward-address $SUBSPACE_WALLET --plot-size 50G
 Restart=on-failure
 LimitNOFILE=65535
+
 [Install]
 WantedBy=multi-user.target" > $HOME/subspaced-farmer.service
 
